@@ -1,0 +1,4 @@
+venv/
+*.xlsx
+*.png
+data/
