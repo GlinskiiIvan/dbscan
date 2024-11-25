@@ -90,6 +90,21 @@ def cluster_images(directory, eps, min_samples):
 
     return clusters
 
+# Сохранение изображений в директории кластеров
+def save_clusters(clusters, output_directory):
+    os.makedirs(output_directory, exist_ok=True)
+    for cluster_id, paths in clusters.items():
+        cluster_name = "noise" if cluster_id == -1 else f"cluster_{cluster_id}"
+        cluster_dir = os.path.join(output_directory, cluster_name)
+        os.makedirs(cluster_dir, exist_ok=True)
+        for path in paths:
+            file_name = os.path.basename(path)
+            new_path = os.path.join(cluster_dir, file_name)
+            try:
+                Image.open(path).save(new_path)
+            except Exception as e:
+                print(f"Не удалось сохранить {path} в {cluster_dir}: {e}")
+
 # Основная программа
 directory = input("Введите путь к директории с PNG изображениями: ").strip().strip("'\"")
 if not os.path.isdir(directory):
@@ -101,10 +116,15 @@ min_samples = int(input("Введите минимальное количест�
 
 clusters = cluster_images(directory, eps, min_samples)
 
-for cluster_id, paths in clusters.items():
-    if cluster_id == -1:
-        print("\nШумовые изображения:")
-    else:
-        print(f"\nКластер {cluster_id}:")
-    for path in paths:
-        print(f"  {path}")
+output_directory = os.path.join(directory, "clustered_images")
+save_clusters(clusters, output_directory)
+
+print(f"Изображения сохранены в директории: {output_directory}")
+
+# for cluster_id, paths in clusters.items():
+#     if cluster_id == -1:
+#         print("\nШумовые изображения:")
+#     else:
+#         print(f"\nКластер {cluster_id}:")
+#     for path in paths:
+#         print(f"  {path}")
